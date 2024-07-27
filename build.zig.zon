@@ -1,0 +1,23 @@
+.{
+    .name = "lightz",
+
+    .version = "0.0.0",
+
+    .dependencies = .{
+        .@"treez-shared" = .{
+            // .url = "https://github.com/fjebaker/treez-shared/archive/main.tar.gz",
+            // .hash = "1220b925c4d4ce581c98116a6a88e1fd024e0fe3eea70b4168a0358fae159a48a96b",
+            .path = "../treez-shared/",
+        },
+        .farbe = .{
+            .url = "https://github.com/fjebaker/farbe/archive/main.tar.gz",
+            .hash = "1220d21d53393ee55f3f66f11181622db7551bfb94f3f526457ad0cef850415ab248",
+        },
+    },
+
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
