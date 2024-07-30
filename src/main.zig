@@ -13,8 +13,8 @@ const Context = struct {
         if (scope) |s| {
             if (self.theme.get(s)) |color| {
                 try color.write(writer, "{s}", .{token});
+                return;
             }
-            return;
         }
         try writer.writeAll(token);
     }
