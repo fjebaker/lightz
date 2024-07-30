@@ -1,55 +1,46 @@
 const std = @import("std");
 const farbe = @import("farbe");
 
-pub const FMT_NONE = farbe.ComptimeFarbe.init().fixed();
+pub const FMT_NONE = farbe.Farbe.init();
 
-fn ThemeType(comptime T: type) type {
-    return struct {
-        attribute: ?T = null,
-        character: ?T = null,
-        comment: ?T = null,
-        conditional: ?T = null,
-        constant: ?T = null,
-        exception: ?T = null,
-        field: ?T = null,
-        function: ?T = null,
-        @"function.builtin": ?T = null,
-        keyword: ?T = null,
-        number: ?T = null,
-        operator: ?T = null,
-        parameter: ?T = null,
-        punctuation: ?T = null,
-        repeat: ?T = null,
-        string: ?T = null,
-        type: ?T = null,
-        variable: ?T = null,
-    };
-}
-
-fn SimpleTheme(comptime T: type) type {
-    return struct {
-        builtins: ?T = null,
-        operators: ?T = null,
-        types: ?T = null,
-        literals: ?T = null,
-        comments: ?T = null,
-    };
-}
+pub const SimpleTheme = struct {
+    builtins: ?farbe.Farbe = null,
+    operators: ?farbe.Farbe = null,
+    types: ?farbe.Farbe = null,
+    literals: ?farbe.Farbe = null,
+    comments: ?farbe.Farbe = null,
+};
 
 pub const Theme = struct {
-    const InnerType = ThemeType(farbe.Farbe);
-    data: InnerType,
+    attribute: ?farbe.Farbe = null,
+    character: ?farbe.Farbe = null,
+    comment: ?farbe.Farbe = null,
+    conditional: ?farbe.Farbe = null,
+    constant: ?farbe.Farbe = null,
+    exception: ?farbe.Farbe = null,
+    field: ?farbe.Farbe = null,
+    function: ?farbe.Farbe = null,
+    @"function.builtin": ?farbe.Farbe = null,
+    keyword: ?farbe.Farbe = null,
+    number: ?farbe.Farbe = null,
+    operator: ?farbe.Farbe = null,
+    parameter: ?farbe.Farbe = null,
+    punctuation: ?farbe.Farbe = null,
+    repeat: ?farbe.Farbe = null,
+    string: ?farbe.Farbe = null,
+    type: ?farbe.Farbe = null,
+    variable: ?farbe.Farbe = null,
 
-    pub fn initComptimeSimple(opts: SimpleTheme(farbe.ComptimeFarbe)) Theme {
+    pub fn initComptimeSimple(comptime opts: SimpleTheme) Theme {
         return innerInitSimple(opts);
     }
 
-    pub fn initSimple(opts: SimpleTheme(farbe.Farbe)) Theme {
+    pub fn initSimple(opts: SimpleTheme) Theme {
         return innerInitSimple(opts);
     }
 
     fn innerInitSimple(opts: anytype) Theme {
-        return initComptime(.{
+        return init(.{
             .attribute = opts.builtins,
             .@"function.builtin" = opts.builtins,
             .keyword = opts.builtins,
@@ -68,24 +59,12 @@ pub const Theme = struct {
         });
     }
 
-    pub fn initComptime(theme: ThemeType(farbe.ComptimeFarbe)) Theme {
-        return innerInit(theme);
+    pub fn initComptime(comptime theme: Theme) Theme {
+        return init(theme);
     }
 
-    pub fn init(theme: ThemeType(farbe.Fabre)) Theme {
-        return innerInit(theme);
-    }
-
-    fn innerInit(theme: anytype) Theme {
-        var data: InnerType = .{};
-
-        inline for (@typeInfo(InnerType).Struct.fields) |field| {
-            if (@field(theme, field.name)) |f| {
-                @field(data, field.name) = f.fixed();
-            }
-        }
-
-        return .{ .data = data };
+    pub fn init(theme: Theme) Theme {
+        return theme;
     }
 
     pub fn get(theme: Theme, key: []const u8) ?farbe.Farbe {
@@ -95,11 +74,11 @@ pub const Theme = struct {
             key;
         var fallback_match: ?farbe.Farbe = null;
 
-        inline for (@typeInfo(InnerType).Struct.fields) |field| {
+        inline for (@typeInfo(Theme).Struct.fields) |field| {
             if (std.mem.eql(u8, key, field.name)) {
-                return @field(theme.data, field.name) orelse FMT_NONE;
+                return @field(theme, field.name) orelse FMT_NONE;
             } else if (std.mem.eql(u8, short, field.name)) {
-                fallback_match = @field(theme.data, field.name) orelse FMT_NONE;
+                fallback_match = @field(theme, field.name) orelse FMT_NONE;
             }
         }
         return fallback_match;
@@ -108,10 +87,10 @@ pub const Theme = struct {
 
 pub const DEFAULT_THEME = Theme.initComptimeSimple(
     .{
-        .builtins = farbe.ComptimeFarbe.init().fgRgb(250, 120, 30).bold(),
-        .operators = farbe.ComptimeFarbe.init().fgRgb(255, 255, 30),
-        .types = farbe.ComptimeFarbe.init().fgRgb(64, 255, 255).bold(),
-        .literals = farbe.ComptimeFarbe.init().fgRgb(255, 160, 160),
-        .comments = farbe.ComptimeFarbe.init().fgRgb(138, 138, 138),
+        .builtins = farbe.Farbe.init().fgRgb(250, 120, 30).bold(),
+        .operators = farbe.Farbe.init().fgRgb(255, 255, 30),
+        .types = farbe.Farbe.init().fgRgb(64, 255, 255).bold(),
+        .literals = farbe.Farbe.init().fgRgb(255, 160, 160),
+        .comments = farbe.Farbe.init().fgRgb(138, 138, 138),
     },
 );

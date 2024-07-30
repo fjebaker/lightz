@@ -32,8 +32,6 @@ pub const SyntaxHighlighter = struct {
         allocator: std.mem.Allocator,
         lang_spec: *treez.LanguageSpec,
     ) !SyntaxHighlighter {
-        var dir = try std.fs.cwd().openDir("zig-out/lib/", .{});
-        defer dir.close();
         var self: SyntaxHighlighter = .{
             .allocator = allocator,
             .lang_spec = lang_spec,
