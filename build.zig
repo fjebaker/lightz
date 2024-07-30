@@ -4,34 +4,35 @@ pub fn build(b: *std.Build) void {
     const target = b.standardTargetOptions(.{});
     const optimize = b.standardOptimizeOption(.{});
 
-    const treez_shared = b.dependency("treez-shared", .{ .target = target, .optimize = optimize });
-    // which languages to build
-    // specific languages can be built with `.lang=&.{.zig, .c, .julia}`
-    // or can specify all as below
-    const langs = b.dependency("treez-shared", .{
+    const treez_shared = b.dependency("shared-treez", .{
         .target = target,
         .optimize = optimize,
-        .all = true,
-        .extdir = b.lib_dir,
+        .@"ext-all" = true,
+        .@"ext-directory" = b.lib_dir,
+        .@"ext-type" = .static,
     });
-    langs.builder.lib_dir = b.lib_dir;
-    b.getInstallStep().dependOn(langs.builder.getInstallStep());
+    treez_shared.builder.lib_dir = b.lib_dir;
+    b.getInstallStep().dependOn(treez_shared.builder.getInstallStep());
 
     const farbe = b.dependency(
         "farbe",
         .{ .target = target, .optimize = optimize },
     );
 
-    const treez_module = treez_shared.module("treez-shared");
+    const treez_module = treez_shared.module("shared-treez");
 
-    const lib = b.addStaticLibrary(.{
-        .name = "lightz",
-        .root_source_file = b.path("src/root.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
-
-    b.installArtifact(lib);
+    const mod = b.addModule(
+        "lightz",
+        .{
+            .root_source_file = b.path("src/root.zig"),
+            .target = target,
+            .optimize = optimize,
+            .imports = &.{
+                .{ .name = "treez", .module = treez_module },
+                .{ .name = "farbe", .module = farbe.module("farbe") },
+            },
+        },
+    );
 
     const exe = b.addExecutable(.{
         .name = "lightz",
@@ -40,8 +41,7 @@ pub fn build(b: *std.Build) void {
         .optimize = optimize,
     });
 
-    exe.root_module.addImport("treez", treez_module);
-    exe.root_module.addImport("farbe", farbe.module("farbe"));
+    exe.root_module.addImport("lightz", mod);
 
     b.installArtifact(exe);
 

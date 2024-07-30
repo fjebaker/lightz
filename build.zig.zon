@@ -4,10 +4,10 @@
     .version = "0.0.0",
 
     .dependencies = .{
-        .@"treez-shared" = .{
-            // .url = "https://github.com/fjebaker/treez-shared/archive/main.tar.gz",
+        .@"shared-treez" = .{
+            // .url = "https://github.com/fjebaker/shared-treez/archive/main.tar.gz",
             // .hash = "1220b925c4d4ce581c98116a6a88e1fd024e0fe3eea70b4168a0358fae159a48a96b",
-            .path = "../treez-shared/",
+            .path = "../shared-treez/",
         },
         .farbe = .{
             .url = "https://github.com/fjebaker/farbe/archive/main.tar.gz",
