@@ -5,9 +5,8 @@
 
     .dependencies = .{
         .@"shared-treez" = .{
-            // .url = "https://github.com/fjebaker/shared-treez/archive/main.tar.gz",
-            // .hash = "1220b925c4d4ce581c98116a6a88e1fd024e0fe3eea70b4168a0358fae159a48a96b",
-            .path = "../shared-treez/",
+            .url = "https://github.com/fjebaker/shared-treez/archive/main.tar.gz",
+            .hash = "122028add19e977975bba93f1cfe81d04d9e6ea682badaa5fb637bdc6da088a19a00",
         },
         .farbe = .{
             .url = "https://github.com/fjebaker/farbe/archive/main.tar.gz",
