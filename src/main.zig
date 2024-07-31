@@ -25,20 +25,30 @@ pub fn main() !void {
     defer _ = gpa.deinit();
     const allocator = gpa.allocator();
 
+    const args = try std.process.argsAlloc(allocator);
+    defer std.process.argsFree(allocator, args);
+
+    if (args.len < 3) {
+        try std.io.getStdErr().writeAll("Too few arguments: needs path and language");
+        return;
+    }
+
     const content = try std.fs.cwd().readFileAlloc(
         allocator,
-        "src/main.zig",
+        args[1],
         10_000,
     );
     defer allocator.free(content);
 
     var ctx: Context = .{ .theme = lightz.DEFAULT_THEME };
 
-    try lightz.walkHighlights(
-        allocator,
+    var hl = lightz.HighlighterState.init(allocator);
+    defer hl.deinit();
+
+    try hl.highlight(
         &ctx,
         Context.callback,
         content,
-        .{ .lang = "zig" },
+        .{ .lang = args[2] },
     );
 }
