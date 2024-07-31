@@ -6,7 +6,7 @@
     .dependencies = .{
         .@"shared-treez" = .{
             .url = "https://github.com/fjebaker/shared-treez/archive/main.tar.gz",
-            .hash = "122028add19e977975bba93f1cfe81d04d9e6ea682badaa5fb637bdc6da088a19a00",
+            .hash = "1220c1e0f2edffc70d662dad5c92bc47c5ad6ffab47d771d2e35a98e2845f6c618a5",
         },
         .farbe = .{
             .url = "https://github.com/fjebaker/farbe/archive/main.tar.gz",
