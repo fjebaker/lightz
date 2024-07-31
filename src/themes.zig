@@ -9,6 +9,7 @@ pub const SimpleTheme = struct {
     types: ?farbe.Farbe = null,
     literals: ?farbe.Farbe = null,
     comments: ?farbe.Farbe = null,
+    functions: ?farbe.Farbe = null,
 };
 
 pub const Theme = struct {
@@ -22,6 +23,7 @@ pub const Theme = struct {
     function: ?farbe.Farbe = null,
     @"function.builtin": ?farbe.Farbe = null,
     @"function.macro": ?farbe.Farbe = null,
+    @"function.call": ?farbe.Farbe = null,
     keyword: ?farbe.Farbe = null,
     number: ?farbe.Farbe = null,
     operator: ?farbe.Farbe = null,
@@ -51,6 +53,8 @@ pub const Theme = struct {
             .exception = opts.operators,
             .@"function.macro" = opts.operators,
             .operator = opts.operators,
+
+            .@"function.call" = opts.functions,
 
             .type = opts.types,
 
@@ -94,5 +98,6 @@ pub const DEFAULT_THEME = Theme.initComptimeSimple(
         .types = farbe.Farbe.init().fgRgb(64, 255, 255).bold(),
         .literals = farbe.Farbe.init().fgRgb(255, 160, 160),
         .comments = farbe.Farbe.init().fgRgb(138, 138, 138),
+        .functions = farbe.Farbe.init().fgRgb(0x7e, 0xa2, 0xff),
     },
 );
