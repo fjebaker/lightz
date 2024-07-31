@@ -21,6 +21,7 @@ pub const Theme = struct {
     field: ?farbe.Farbe = null,
     function: ?farbe.Farbe = null,
     @"function.builtin": ?farbe.Farbe = null,
+    @"function.macro": ?farbe.Farbe = null,
     keyword: ?farbe.Farbe = null,
     number: ?farbe.Farbe = null,
     operator: ?farbe.Farbe = null,
@@ -48,6 +49,7 @@ pub const Theme = struct {
             .conditional = opts.builtins,
 
             .exception = opts.operators,
+            .@"function.macro" = opts.operators,
             .operator = opts.operators,
 
             .type = opts.types,

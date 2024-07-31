@@ -121,28 +121,60 @@ fn WrapHighlightCallback(comptime T: type, comptime funcT: anytype) type {
     };
 }
 
-pub fn walkHighlights(
+pub const HighlighterState = struct {
+    const HLMap = std.StringHashMap(SyntaxHighlighter);
     allocator: std.mem.Allocator,
-    ctx: anytype,
-    cb: DrawCallback(@TypeOf(ctx)),
-    content: []const u8,
-    opts: HighlightOptions,
-) !void {
-    var lang_spec = try treez.load_language_extension(
-        allocator,
-        opts.ext_dir,
-        .{ .name = opts.lang },
-    );
-    defer lang_spec.deinit();
+    highlighter_map: HLMap,
 
-    var parser = try SyntaxHighlighter.init(allocator, &lang_spec);
-    defer parser.deinit();
+    pub fn init(allocator: std.mem.Allocator) HighlighterState {
+        return .{
+            .allocator = allocator,
+            .highlighter_map = HLMap.init(allocator),
+        };
+    }
 
-    const OuterCtx = WrapHighlightCallback(@TypeOf(ctx), cb);
-    var outer_ctx: OuterCtx = .{
-        .inner_ctx = ctx,
-        .content = content,
-    };
+    pub fn deinit(self: *HighlighterState) void {
+        var itt = self.highlighter_map.iterator();
+        while (itt.next()) |item| {
+            item.value_ptr.deinit();
+        }
+        self.highlighter_map.deinit();
+        self.* = undefined;
+    }
 
-    try parser.walk(&outer_ctx, OuterCtx.inner, content);
-}
+    pub fn highlight(
+        self: *HighlighterState,
+        ctx: anytype,
+        cb: DrawCallback(@TypeOf(ctx)),
+        content: []const u8,
+        opts: HighlightOptions,
+    ) !void {
+        const parser = self.highlighter_map.getPtr(opts.lang) orelse b: {
+            var lang_spec = try treez.load_language_extension(
+                self.allocator,
+                opts.ext_dir,
+                .{ .name = opts.lang },
+            );
+            errdefer lang_spec.deinit();
+
+            var parser = try SyntaxHighlighter.init(self.allocator, &lang_spec);
+            errdefer parser.deinit();
+
+            try self.highlighter_map.put(opts.lang, parser);
+            break :b self.highlighter_map.getPtr(opts.lang).?;
+        };
+
+        const OuterCtx = WrapHighlightCallback(@TypeOf(ctx), cb);
+        var outer_ctx: OuterCtx = .{
+            .inner_ctx = ctx,
+            .content = content,
+        };
+
+        try parser.walk(&outer_ctx, OuterCtx.inner, content);
+
+        // anything that we didn't otherwise quite get
+        if (outer_ctx.end_byte < content.len) {
+            try cb(ctx, content[outer_ctx.end_byte..], null);
+        }
+    }
+};
