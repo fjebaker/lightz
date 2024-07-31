@@ -98,6 +98,6 @@ pub const DEFAULT_THEME = Theme.initComptimeSimple(
         .types = farbe.Farbe.init().fgRgb(64, 255, 255).bold(),
         .literals = farbe.Farbe.init().fgRgb(255, 160, 160),
         .comments = farbe.Farbe.init().fgRgb(138, 138, 138),
-        .functions = farbe.Farbe.init().fgRgb(0x7e, 0xa2, 0xff),
+        .functions = farbe.Farbe.init().fgRgb(0x60, 0xdb, 0x85),
     },
 );
