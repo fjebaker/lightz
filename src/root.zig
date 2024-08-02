@@ -124,11 +124,13 @@ fn WrapHighlightCallback(comptime T: type, comptime funcT: anytype) type {
 pub const HighlighterState = struct {
     const HLMap = std.StringHashMap(SyntaxHighlighter);
     allocator: std.mem.Allocator,
+    arena: std.heap.ArenaAllocator,
     highlighter_map: HLMap,
 
     pub fn init(allocator: std.mem.Allocator) HighlighterState {
         return .{
             .allocator = allocator,
+            .arena = std.heap.ArenaAllocator.init(allocator),
             .highlighter_map = HLMap.init(allocator),
         };
     }
@@ -139,7 +141,34 @@ pub const HighlighterState = struct {
             item.value_ptr.deinit();
         }
         self.highlighter_map.deinit();
+        self.arena.deinit();
         self.* = undefined;
+    }
+
+    fn tmpAllocator(self: *HighlighterState) std.mem.Allocator {
+        return self.arena.allocator();
+    }
+
+    pub fn getOrLoadLanguage(
+        self: *HighlighterState,
+        opts: HighlightOptions,
+    ) !*SyntaxHighlighter {
+        const parser = self.highlighter_map.getPtr(opts.lang) orelse b: {
+            const key = try self.tmpAllocator().dupe(u8, opts.lang);
+            var lang_spec = try treez.load_language_extension(
+                self.allocator,
+                opts.ext_dir,
+                .{ .name = key },
+            );
+            errdefer lang_spec.deinit();
+
+            var parser = try SyntaxHighlighter.init(self.allocator, &lang_spec);
+            errdefer parser.deinit();
+
+            try self.highlighter_map.put(key, parser);
+            break :b self.highlighter_map.getPtr(key).?;
+        };
+        return parser;
     }
 
     pub fn highlight(
@@ -149,21 +178,7 @@ pub const HighlighterState = struct {
         content: []const u8,
         opts: HighlightOptions,
     ) !void {
-        const parser = self.highlighter_map.getPtr(opts.lang) orelse b: {
-            var lang_spec = try treez.load_language_extension(
-                self.allocator,
-                opts.ext_dir,
-                .{ .name = opts.lang },
-            );
-            errdefer lang_spec.deinit();
-
-            var parser = try SyntaxHighlighter.init(self.allocator, &lang_spec);
-            errdefer parser.deinit();
-
-            try self.highlighter_map.put(opts.lang, parser);
-            break :b self.highlighter_map.getPtr(opts.lang).?;
-        };
-
+        const parser = try self.getOrLoadLanguage(opts);
         const OuterCtx = WrapHighlightCallback(@TypeOf(ctx), cb);
         var outer_ctx: OuterCtx = .{
             .inner_ctx = ctx,
