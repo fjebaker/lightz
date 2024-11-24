@@ -6,11 +6,11 @@
     .dependencies = .{
         .@"shared-treez" = .{
             .url = "https://github.com/fjebaker/shared-treez/archive/main.tar.gz",
-            .hash = "1220b1064fdffca02d928ae9642047c443f39e2f68fd46cbbbb43d516361b59dee29",
+            .hash = "122080ae903f7afd9b725ea16c5a40179d98fcd80ff37b9877a4fdbafc71813743b9",
         },
         .farbe = .{
             .url = "https://github.com/fjebaker/farbe/archive/main.tar.gz",
-            .hash = "1220b85506cc63baa520e52ea7558cdbdf2fe2f5efb0b456f2cc6a5c984623b380be",
+            .hash = "1220afe0eee9d0382f7ff07905205e287a8714bb40fa2642f8b1103509ac3503d93d",
         },
     },
 

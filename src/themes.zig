@@ -80,7 +80,7 @@ pub const Theme = struct {
             key;
         var fallback_match: ?farbe.Farbe = null;
 
-        inline for (@typeInfo(Theme).Struct.fields) |field| {
+        inline for (@typeInfo(Theme).@"struct".fields) |field| {
             if (std.mem.eql(u8, key, field.name)) {
                 return @field(theme, field.name) orelse FMT_NONE;
             } else if (std.mem.eql(u8, short, field.name)) {
