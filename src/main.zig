@@ -9,7 +9,8 @@ const Context = struct {
         token: []const u8,
         scope: ?[]const u8,
     ) !void {
-        const writer = std.io.getStdOut().writer();
+        var stdout = std.fs.File.stdout().writer(&.{});
+        const writer = &stdout.interface;
         if (scope) |s| {
             if (self.theme.get(s)) |color| {
                 try color.write(writer, "{s}", .{token});
@@ -29,7 +30,8 @@ pub fn main() !void {
     defer std.process.argsFree(allocator, args);
 
     if (args.len < 3) {
-        try std.io.getStdErr().writeAll("Too few arguments: needs path and language");
+        var stderr = std.fs.File.stderr().writer(&.{});
+        try stderr.interface.writeAll("Too few arguments: needs path and language");
         return;
     }
 

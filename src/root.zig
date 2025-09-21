@@ -1,6 +1,7 @@
 const std = @import("std");
 const farbe = @import("farbe");
-const treez = @import("treez");
+const shared_treez = @import("shared_treez");
+const treez = shared_treez.treez;
 
 pub const themes = @import("themes.zig");
 pub const Theme = themes.Theme;
@@ -18,7 +19,7 @@ fn CallBack(comptime T: type) type {
 
 pub const SyntaxHighlighter = struct {
     allocator: std.mem.Allocator,
-    lang_spec: *treez.LanguageSpec,
+    lang_spec: *shared_treez.LanguageSpec,
     parser: *treez.Parser,
     query: *treez.Query,
     tree: ?*treez.Tree = null,
@@ -30,7 +31,7 @@ pub const SyntaxHighlighter = struct {
 
     pub fn init(
         allocator: std.mem.Allocator,
-        lang_spec: *treez.LanguageSpec,
+        lang_spec: *shared_treez.LanguageSpec,
     ) !SyntaxHighlighter {
         var self: SyntaxHighlighter = .{
             .allocator = allocator,
@@ -155,7 +156,7 @@ pub const HighlighterState = struct {
     ) !*SyntaxHighlighter {
         const parser = self.highlighter_map.getPtr(opts.lang) orelse b: {
             const key = try self.tmpAllocator().dupe(u8, opts.lang);
-            var lang_spec = try treez.load_language_extension(
+            var lang_spec = try shared_treez.load_language_extension(
                 self.allocator,
                 opts.ext_dir,
                 .{ .name = key },
