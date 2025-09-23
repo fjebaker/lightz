@@ -10,8 +10,8 @@
             .hash = "farbe-0.4.0-AmrQLw1YAAD_El4UqA_2hSuO9E1bpMhlQyHAXyJOSpni",
         },
         .shared_treez = .{
-            .url = "git+https://github.com/fjebaker/shared-treez#745ff1b24351022d374b68f48bb8fd0f3f790fed",
-            .hash = "shared_treez-0.0.1-gJqjR_1hAADtQAiH-e-LXpCDImr4DiwITPilHTa-aAUL",
+            .url = "git+https://github.com/fjebaker/shared-treez#07587776213049c20aaa7f6594afc221ab2b7b65",
+            .hash = "shared_treez-0.0.1-gJqjRzFiAABHaQbnICurqwjq-BIca-3QPm7_WeSakqpc",
         },
     },
 
